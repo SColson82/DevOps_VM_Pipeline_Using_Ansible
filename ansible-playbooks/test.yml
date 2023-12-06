@@ -1,0 +1,35 @@
+---
+# Test Environment Playbook
+
+# Web Server Configuration for Test
+- hosts: webservertest
+  become: yes
+  vars:
+    app_repo_url: "git@github.com:ttu-bburchfield/swollenhippofinal.git"
+
+  tasks:
+    - name: Install necessary packages
+      yum:
+        name:
+          - httpd
+          - nodejs
+        state: present
+
+    - name: Clone Git repository
+      git:
+        repo: "{{ app_repo_url }}"
+        dest: /var/www/html
+
+    - name: Install Node.js dependencies
+      command: npm install
+      args:
+        chdir: /var/www/html
+
+# Database Server Configuration for Test
+- hosts: dbservertest
+  become: yes
+  tasks:
+    - name: Install MariaDB
+      yum:
+        name: mariadb-server
+        state: present
